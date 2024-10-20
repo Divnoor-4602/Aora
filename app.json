@@ -15,7 +15,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "package": "com.divnoor.aora"
     },
     "android": {
       "adaptiveIcon": {
