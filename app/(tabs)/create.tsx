@@ -21,7 +21,7 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 interface CreatePostProps {
   title: string;
   video: { uri: string; fileName?: string | undefined | null } | null;
-  aiPrompt: string;
+  prompt: string;
   thumbnail: { uri: string; fileName?: string | undefined | null } | null;
 }
 
@@ -32,7 +32,7 @@ const Create = () => {
     title: "",
     video: null,
     thumbnail: null,
-    aiPrompt: "",
+    prompt: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -67,7 +67,7 @@ const Create = () => {
       !createPost.title ||
       !createPost.video ||
       !createPost.thumbnail ||
-      !createPost.aiPrompt
+      !createPost.prompt
     ) {
       Alert.alert("Error", "Please fill in all fields");
     }
@@ -76,6 +76,7 @@ const Create = () => {
     try {
       await createVideo({
         ...createPost,
+
         userId: user.$id,
       });
     } catch (error) {
@@ -86,7 +87,7 @@ const Create = () => {
         title: "",
         video: null,
         thumbnail: null,
-        aiPrompt: "",
+        prompt: "",
       });
 
       setIsSubmitting(false);
@@ -174,10 +175,8 @@ const Create = () => {
         {/* AI prompt */}
         <FormField
           title="AI Prompt"
-          value={createPost.aiPrompt}
-          handleChangeText={(e) =>
-            setCreatePost({ ...createPost, aiPrompt: e })
-          }
+          value={createPost.prompt}
+          handleChangeText={(e) => setCreatePost({ ...createPost, prompt: e })}
           placeholder="The AI prompt of your video..."
           otherStyles={"mt-7"}
           keyboardType={"video title"}

@@ -120,7 +120,6 @@ const Trending = ({ posts }: TrendingProps) => {
       data={posts}
       keyExtractor={(item: VideoItem) => item.$id}
       renderItem={({ item }: { item: VideoItem }) => {
-        console.log("rendering");
         return <TrendingItem activeItem={activeItem} item={item} />;
       }}
       onViewableItemsChanged={viewableItemsChanged}

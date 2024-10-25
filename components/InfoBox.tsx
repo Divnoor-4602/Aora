@@ -3,7 +3,7 @@ import React from "react";
 
 interface InfoBoxProps {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   containerStyles: string;
   titleStyles: string;
 }

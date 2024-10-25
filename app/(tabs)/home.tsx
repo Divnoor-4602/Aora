@@ -14,6 +14,8 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 const Home = () => {
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
 
+  console.log("home");
+
   const { data: posts, refetch } = useAppwrite(getAllPosts);
 
   const { data: latestPosts } = useAppwrite(getLatestVideos);
@@ -22,9 +24,7 @@ const Home = () => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-
     await refetch();
-
     setRefreshing(false);
   };
 
@@ -43,7 +43,7 @@ const Home = () => {
                     Welcome Back
                   </Text>
                   <Text className="font-pbold text-2xl text-white">
-                    {user.username}
+                    {user?.username || ""}
                   </Text>
                 </View>
 

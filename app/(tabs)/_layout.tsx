@@ -1,6 +1,7 @@
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import { View, Text, Image } from "react-native";
 import { icons } from "../../constants";
+import { useGlobalContext } from "@/context/GlobalProvider";
 
 const TabIcon = ({
   icon,
@@ -34,13 +35,17 @@ const TabIcon = ({
 };
 
 export default function TabLayout() {
+  const { isLoading, isLoggedIn } = useGlobalContext();
+
+  if (!isLoading && !isLoggedIn) return <Redirect href="/sign-in" />;
+
   return (
     <>
       <Tabs
         screenOptions={{
-          tabBarShowLabel: false,
           tabBarActiveTintColor: "#FFA001",
           tabBarInactiveTintColor: "#CDCDE0",
+          tabBarShowLabel: false,
           tabBarStyle: {
             backgroundColor: "#161622",
             borderTopWidth: 1,
@@ -49,7 +54,6 @@ export default function TabLayout() {
           },
         }}
       >
-        {/* home screen */}
         <Tabs.Screen
           name="home"
           options={{
@@ -59,13 +63,12 @@ export default function TabLayout() {
               <TabIcon
                 icon={icons.home}
                 color={color}
-                name={"Home"}
+                name="Home"
                 focused={focused}
               />
             ),
           }}
         />
-        {/* Bookmark screen */}
         <Tabs.Screen
           name="bookmark"
           options={{
@@ -75,13 +78,13 @@ export default function TabLayout() {
               <TabIcon
                 icon={icons.bookmark}
                 color={color}
-                name={"Bookmark"}
+                name="Bookmark"
                 focused={focused}
               />
             ),
           }}
         />
-        {/* create screen */}
+
         <Tabs.Screen
           name="create"
           options={{
@@ -91,13 +94,12 @@ export default function TabLayout() {
               <TabIcon
                 icon={icons.plus}
                 color={color}
-                name={"Create"}
+                name="Create"
                 focused={focused}
               />
             ),
           }}
         />
-        {/* profile screen */}
         <Tabs.Screen
           name="profile"
           options={{
@@ -107,7 +109,7 @@ export default function TabLayout() {
               <TabIcon
                 icon={icons.profile}
                 color={color}
-                name={"Profile"}
+                name="Profile"
                 focused={focused}
               />
             ),

@@ -6,7 +6,7 @@ import CustomButton from "@/components/CustomButton";
 import React from "react";
 import { useGlobalContext } from "@/context/GlobalProvider";
 
-export default function HomeScreen() {
+export default function Welcome() {
   const { isLoading, isLoggedIn } = useGlobalContext();
 
   if (!isLoading && isLoggedIn) return <Redirect href="/home" />;

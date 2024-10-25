@@ -1,5 +1,5 @@
 import { View, Text, FlatList, Image, RefreshControl } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
 import { searchPosts } from "@/lib/appwrite";
@@ -16,13 +16,9 @@ const Search = () => {
     searchPosts(query as string)
   );
 
-  const [refreshing, setRefreshing] = useState<boolean>(false);
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await refetch();
-    setRefreshing(false);
-  };
+  useEffect(() => {
+    refetch();
+  }, [query]);
 
   return (
     <SafeAreaView className="bg-primary text-white h-full">
@@ -52,7 +48,9 @@ const Search = () => {
                 </View>
               </View>
 
-              <SearchInput />
+              <SearchInput
+                initialQuery={Array.isArray(query) ? query[0] : query}
+              />
             </View>
           );
         }}
@@ -62,9 +60,6 @@ const Search = () => {
             subtitle="Be the first one to upload a video"
           />
         )}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
       />
     </SafeAreaView>
   );

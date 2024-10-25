@@ -4,10 +4,14 @@ import React, { useState } from "react";
 import { icons } from "../constants";
 import { usePathname, router } from "expo-router";
 
-const SearchInput = () => {
+interface SearchInputProps {
+  initialQuery: string;
+}
+
+const SearchInput = ({ initialQuery }: SearchInputProps) => {
   const pathname = usePathname();
 
-  const [query, setQuery] = useState<string>("");
+  const [query, setQuery] = useState<string>(initialQuery || "");
 
   return (
     <View className="w-full h-16 bg-black-100 rounded-2xl focus:border-secondary focus:border border  border-black-200 px-4 flex flex-row items-center space-x-2">
@@ -21,7 +25,7 @@ const SearchInput = () => {
 
       <TouchableOpacity
         onPress={() => {
-          if (!query) {
+          if (query === "") {
             Alert.alert(
               "Missing query",
               "Please input something to search results across database"
