@@ -1,37 +1,40 @@
-import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
+import { View, TextInput, TouchableOpacity, Image, Alert } from "react-native";
 import React, { useState } from "react";
 
 import { icons } from "../constants";
-import FormField from "./FormField";
+import { usePathname, router } from "expo-router";
 
-interface SearchInputProps {
-  value: string;
+const SearchInput = () => {
+  const pathname = usePathname();
 
-  handleChangeText: (e: string) => void;
-  otherStyles?: string;
-  keyboardType?: string;
-}
-
-const SearchInput = ({
-  value,
-  handleChangeText,
-  otherStyles,
-  keyboardType,
-  ...props
-}: SearchInputProps) => {
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [query, setQuery] = useState<string>("");
 
   return (
-    <View className="w-full h-16 bg-black-100 rounded-2xl focus:border-secondary  border-black-200 px-4 flex flex-row items-center space-x-2">
+    <View className="w-full h-16 bg-black-100 rounded-2xl focus:border-secondary focus:border border  border-black-200 px-4 flex flex-row items-center space-x-2">
       <TextInput
         className="text-base mt-0.5 font-pregular text-white flex-1"
-        value={value}
+        value={query}
         placeholder={"Search for a video"}
-        placeholderTextColor={"#7b7b8b"}
-        onChangeText={handleChangeText}
+        placeholderTextColor={"#CDCDE0"}
+        onChangeText={(e) => setQuery(e)}
       />
 
-      <TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+          if (!query) {
+            Alert.alert(
+              "Missing query",
+              "Please input something to search results across database"
+            );
+          }
+
+          if (pathname.startsWith("/search")) {
+            router.setParams({ query });
+          } else {
+            router.push(`/search/${query}`);
+          }
+        }}
+      >
         <Image source={icons.search} className="h-5 w-5" resizeMode="contain" />
       </TouchableOpacity>
     </View>

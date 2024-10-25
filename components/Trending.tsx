@@ -10,9 +10,12 @@ import React, { useState } from "react";
 
 import { icons } from "@/constants";
 
-interface Video {
+import { Video, ResizeMode } from "expo-av";
+
+interface VideoItem {
   $id: string;
   title: string;
+  video: string;
   thumbnail: string;
   creator: {
     username: string;
@@ -21,12 +24,12 @@ interface Video {
 }
 
 interface TrendingProps {
-  posts: Video[];
+  posts: VideoItem[];
 }
 
 interface TrendingItemProps {
   activeItem: string;
-  item: Video;
+  item: VideoItem;
 }
 
 const zoomIn = {
@@ -63,7 +66,20 @@ const TrendingItem = ({ activeItem, item }: TrendingItemProps) => {
     >
       {play ? (
         <>
-          <Text className="text-white">Playing</Text>
+          <Video
+            source={{
+              uri: item.video,
+            }}
+            className="w-48 h-72 rounded-xl mt-3 bg-white/10"
+            resizeMode={ResizeMode.CONTAIN}
+            useNativeControls
+            shouldPlay
+            onPlaybackStatusUpdate={(playbackStatus) => {
+              if (playbackStatus.isLoaded && playbackStatus.didJustFinish) {
+                setPlay(false);
+              }
+            }}
+          />
         </>
       ) : (
         <>
@@ -102,8 +118,8 @@ const Trending = ({ posts }: TrendingProps) => {
   return (
     <FlatList
       data={posts}
-      keyExtractor={(item: Video) => item.$id}
-      renderItem={({ item }: { item: Video }) => {
+      keyExtractor={(item: VideoItem) => item.$id}
+      renderItem={({ item }: { item: VideoItem }) => {
         console.log("rendering");
         return <TrendingItem activeItem={activeItem} item={item} />;
       }}
@@ -111,7 +127,7 @@ const Trending = ({ posts }: TrendingProps) => {
       viewabilityConfig={{
         itemVisiblePercentThreshold: 70,
       }}
-      contentOffset={{ x: 120, y: 0 }}
+      contentOffset={{ x: 130, y: 0 }}
       horizontal
     />
   );

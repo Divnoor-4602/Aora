@@ -5,6 +5,8 @@ import {
   Databases,
   ID,
   Query,
+  Storage,
+  ImageGravity,
 } from "react-native-appwrite";
 
 export const appwriteConfig = {
@@ -28,6 +30,7 @@ client
 const account = new Account(client);
 const avatars = new Avatars(client);
 const databases = new Databases(client);
+const storage = new Storage(client);
 
 export const createUser = async ({
   email,
@@ -107,7 +110,8 @@ export const getAllPosts = async () => {
   try {
     const posts = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.videoCollectionId
+      appwriteConfig.videoCollectionId,
+      [Query.orderDesc("$createdAt")]
     );
 
     return posts.documents;
@@ -132,4 +136,126 @@ export const getLatestVideos = async () => {
   }
 };
 
-export const getTrendingPosts = async () => {};
+export const searchPosts = async (query: string) => {
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.videoCollectionId,
+      [Query.search("title", query)]
+    );
+
+    return posts.documents;
+  } catch (error) {
+    console.log(error);
+    throw new Error(String(error));
+  }
+};
+
+export const getUserPosts = async (userId: string) => {
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.videoCollectionId,
+      [Query.equal("creator", userId)]
+    );
+
+    return posts.documents;
+  } catch (error) {
+    console.log(error);
+    throw new Error(String(error));
+  }
+};
+
+export const signOut = async () => {
+  try {
+    const session = await account.deleteSession("current");
+
+    return session;
+  } catch (error) {
+    console.log(error);
+    throw new Error(String(error));
+  }
+};
+
+export const getfilePreview = async (fileId: string, type: string) => {
+  let fileUrl;
+
+  try {
+    if (type === "video") {
+      fileUrl = storage.getFileView(appwriteConfig.storageId, fileId);
+    } else if (type === "image") {
+      fileUrl = storage.getFilePreview(
+        appwriteConfig.storageId,
+        fileId,
+        2000,
+        2000,
+        "top" as ImageGravity,
+        100
+      );
+
+      if (!fileUrl) throw Error;
+    }
+
+    return fileUrl;
+  } catch (error) {
+    console.log(error);
+    throw new Error(String(error));
+  }
+};
+
+export const uploadFile = async (file: any, type: string) => {
+  if (!file) return;
+
+  const asset = {
+    name: file.fileName,
+    type: file.mimeType,
+    size: file.fileSize,
+    uri: file.uri,
+  };
+
+  try {
+    const uploadedFile = await storage.createFile(
+      appwriteConfig.storageId,
+      ID.unique(),
+      asset
+    );
+
+    const fileUrl = await getfilePreview(uploadedFile.$id, type);
+
+    return fileUrl;
+    return;
+  } catch (error) {
+    throw new Error(String(error));
+  }
+};
+
+export const createVideo = async (form: {
+  title: string;
+  thumbnail: any;
+  video: any;
+  aiPrompt: string;
+  userId: string;
+}) => {
+  try {
+    const [thumbnailUrl, videoUrl] = await Promise.all([
+      uploadFile(form.thumbnail, "image"),
+      uploadFile(form.video, "video"),
+    ]);
+
+    const newPost = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.videoCollectionId,
+      ID.unique(),
+      {
+        title: form.title,
+        thumbnail: thumbnailUrl,
+        video: videoUrl,
+        aiPrompt: form.aiPrompt,
+        creator: form.userId,
+      }
+    );
+  } catch (error) {
+    console.log(error);
+    throw new Error(String(error));
+  }
+};
