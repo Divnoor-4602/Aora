@@ -168,7 +168,7 @@ export const getUserPosts = async (userId: string) => {
 
 export const signOut = async () => {
   try {
-    const session = await account.deleteSessions();
+    const session = await account.deleteSession("current");
 
     return session;
   } catch (error) {
@@ -233,7 +233,7 @@ export const createVideo = async (form: {
   title: string;
   thumbnail: any;
   video: any;
-  aiPrompt: string;
+  prompt: string;
   userId: string;
 }) => {
   try {
@@ -250,12 +250,23 @@ export const createVideo = async (form: {
         title: form.title,
         thumbnail: thumbnailUrl,
         video: videoUrl,
-        aiPrompt: form.aiPrompt,
+        prompt: form.prompt,
         creator: form.userId,
       }
     );
   } catch (error) {
     console.log(error);
     throw new Error(String(error));
+  }
+};
+
+export const checkSession = async () => {
+  try {
+    const session = await account.getSession("current");
+
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
   }
 };

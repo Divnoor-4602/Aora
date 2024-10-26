@@ -9,7 +9,10 @@ import { useGlobalContext } from "@/context/GlobalProvider";
 export default function Welcome() {
   const { isLoading, isLoggedIn } = useGlobalContext();
 
-  if (!isLoading && isLoggedIn) return <Redirect href="/home" />;
+  if (!isLoading && isLoggedIn) {
+    console.log("Redirecting to /home");
+    return <Redirect href="/home" />;
+  }
 
   return (
     <SafeAreaView className="bg-primary h-full">

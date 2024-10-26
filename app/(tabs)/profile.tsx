@@ -8,9 +8,8 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { icons, images } from "../../constants";
+import { icons } from "../../constants";
 
-import SearchInput from "@/components/SearchInput";
 import EmptyState from "@/components/EmptyState";
 
 import VideoCard from "@/components/VideoCard";
@@ -31,18 +30,19 @@ const Profile = () => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-
     refetch();
-
     setRefreshing(false);
   };
 
   const logout = async () => {
-    await signOut();
-    setUser(null);
-    setIsLoggedIn(false);
+    try {
+      setUser(null);
+      setIsLoggedIn(false);
 
-    router.replace("/sign-in");
+      await signOut();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

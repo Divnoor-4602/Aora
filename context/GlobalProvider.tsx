@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/appwrite";
+import { checkSession, getCurrentUser } from "@/lib/appwrite";
 import { createContext, useContext, useState, useEffect } from "react";
 
 interface GlobalContextProps {
@@ -28,22 +28,44 @@ export const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    getCurrentUser()
-      .then((response) => {
-        if (response) {
-          setIsLoggedIn(true);
-          setUser(response);
-        } else {
-          setIsLoggedIn(false);
-          setUser(null);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
+    // check if a session exists and then call getCurrentUser
+    checkSession().then((response) => {
+      console.log("checking session", response);
+      if (response === true) {
+        getCurrentUser().then((response) => {
+          if (response) {
+            setIsLoggedIn(true);
+            setUser(response);
+            setIsLoading(false);
+          } else {
+            setIsLoggedIn(false);
+            setUser(null);
+            setIsLoading(false);
+          }
+        });
+      } else {
+        setIsLoggedIn(false);
+        setUser(null);
         setIsLoading(false);
-      });
+      }
+    });
+
+    // getCurrentUser()
+    //   .then((response) => {
+    //     if (response) {
+    //       setIsLoggedIn(true);
+    //       setUser(response);
+    //     } else {
+    //       setIsLoggedIn(false);
+    //       setUser(null);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   })
+    //   .finally(() => {
+    //     setIsLoading(false);
+    //   });
   }, []);
 
   return (
